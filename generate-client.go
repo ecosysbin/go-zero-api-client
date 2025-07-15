@@ -419,35 +419,6 @@ func _forceBytesImport() {
 	return formattedCode, nil
 }
 
-// 提取路径中的参数
-func extractPathParams(path string) []string {
-	var params []string
-	re := regexp.MustCompile(`:[^/?]+`)
-	params = re.FindAllString(path, -1)
-	return params
-}
-
-// 检查路径是否包含查询参数
-func hasQueryParams(path string) bool {
-	return strings.Contains(path, "?")
-}
-
-// 提取查询参数
-func extractQueryParams(path string) []string {
-	if !hasQueryParams(path) {
-		return nil
-	}
-
-	parts := strings.Split(path, "?")
-	if len(parts) < 2 {
-		return nil
-	}
-
-	queryStr := parts[1]
-	params := strings.Split(queryStr, "&")
-	return params
-}
-
 func main() {
 	// 定义命令行参数
 	apiFile := flag.String("api", "", "Path to .api file")
