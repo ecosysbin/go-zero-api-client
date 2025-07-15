@@ -268,7 +268,7 @@ func _forceBytesImport() {
 				pathParams   []FieldDefinition // path:"name"
 				formParams   []FieldDefinition // form:"delete,optional"
 				headerParams []FieldDefinition // header:"authorization"
-				jsonParams   []FieldDefinition // json:"name"
+				// jsonParams   []FieldDefinition // json:"name"
 			)
 
 			// 查找请求结构体定义
@@ -289,8 +289,8 @@ func _forceBytesImport() {
 						formParams = append(formParams, field)
 					case strings.Contains(field.Tag, `header:"`):
 						headerParams = append(headerParams, field)
-					case strings.Contains(field.Tag, `json:"`):
-						jsonParams = append(jsonParams, field)
+						// case strings.Contains(field.Tag, `json:"`):
+						// 	jsonParams = append(jsonParams, field)
 					}
 				}
 			}
