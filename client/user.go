@@ -80,7 +80,7 @@ func NewUserApi(domain string) *UserApiClient {
 
 // AddUserHandler 对应.api文件中的AddUserHandler接口
 func (c *UserApiClient) AddUserHandler(ctx context.Context, req AddUserRequest) (*AddUserResponse, error) {
-	fullURL := fmt.Sprintf("%s%s", c.domain, "/v1/user")
+	fullURL := fmt.Sprintf("%s/v1/user", c.domain)
 
 	// 创建HTTP POST请求
 	reqBody, err := json.Marshal(req)
@@ -127,7 +127,7 @@ func (c *UserApiClient) AddUserHandler(ctx context.Context, req AddUserRequest) 
 
 // DeleteUserHandler 对应.api文件中的DeleteUserHandler接口
 func (c *UserApiClient) DeleteUserHandler(ctx context.Context, req DeleteUserRequest) (*DeleteUserResponse, error) {
-	fullURL := fmt.Sprintf("%s%s", c.domain, "/v1/user/"+req.Name+"")
+	fullURL := fmt.Sprintf("%s/v1/user/"+req.Name+"", c.domain)
 
 	// 创建HTTP DELETE请求
 	reqObj, err := http.NewRequestWithContext(ctx, "DELETE", fullURL, nil)
@@ -167,7 +167,7 @@ func (c *UserApiClient) DeleteUserHandler(ctx context.Context, req DeleteUserReq
 
 // UpdateUserHandler 对应.api文件中的UpdateUserHandler接口
 func (c *UserApiClient) UpdateUserHandler(ctx context.Context, req UpdateUserRequest) (*UpdateUserResponse, error) {
-	fullURL := fmt.Sprintf("%s%s", c.domain, "/v1/user/"+req.Name+"")
+	fullURL := fmt.Sprintf("%s/v1/user/"+req.Name+"", c.domain)
 
 	// 创建HTTP PUT请求
 	reqBody, err := json.Marshal(req)
@@ -214,7 +214,7 @@ func (c *UserApiClient) UpdateUserHandler(ctx context.Context, req UpdateUserReq
 
 // GetUserHandler 对应.api文件中的GetUserHandler接口
 func (c *UserApiClient) GetUserHandler(ctx context.Context, req GetUserRequest) (*GetUserResponse, error) {
-	fullURL := fmt.Sprintf("%s%s", c.domain, "/v1/user/"+req.Name+"")
+	fullURL := fmt.Sprintf("%s/v1/user/"+req.Name+"", c.domain)
 
 	// 处理form参数（查询字符串）
 	query := url.Values{}

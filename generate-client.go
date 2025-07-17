@@ -146,7 +146,7 @@ func parseFields(content string) []FieldDefinition {
 	matches := fieldRegex.FindAllStringSubmatch(content, -1)
 
 	for _, match := range matches {
-		if len(match) < 2 {
+		if len(match) < 3 {
 			continue
 		}
 
@@ -156,7 +156,7 @@ func parseFields(content string) []FieldDefinition {
 			Comment: strings.TrimPrefix(match[4], "// "),
 		}
 
-		if len(match) > 3 {
+		if len(match) > 3 && match[3] != "" {
 			field.Tag = strings.Trim(match[3], "`")
 		}
 
@@ -244,6 +244,12 @@ func _forceBytesImport() {
 
 	// 生成客户端结构体
 	fmt.Println("generate struct client code")
+
+	// 检查是否有服务定义
+	if len(apiDef.Services) == 0 {
+		return nil, fmt.Errorf("no services found in API definition")
+	}
+
 	buf.WriteString(fmt.Sprintf("// %sClient 是访问%s服务的客户端\n", apiDef.Services[0].Name, apiDef.Services[0].Name))
 	buf.WriteString(fmt.Sprintf("type %sClient struct {\n", apiDef.Services[0].Name))
 	buf.WriteString("	domain string\n")
@@ -301,7 +307,6 @@ func _forceBytesImport() {
 				service.Name, method.Handler, method.Request, method.Response))
 
 			// 3. 构建URL（拼接path参数）
-			buf.WriteString("	fullURL := fmt.Sprintf(\"%s%s\", c.domain, \"")
 			pathTemplate := method.Path
 			for _, field := range pathParams {
 				// 提取path标签的参数名（如 `path:"name"` 中的 "name"）
@@ -312,7 +317,7 @@ func _forceBytesImport() {
 				// 替换路径中的占位符（如 /v1/user/:name -> /v1/user/"+req.Name）
 				pathTemplate = strings.ReplaceAll(pathTemplate, ":"+paramKey, "\" + req."+field.Name+" + \"")
 			}
-			buf.WriteString(pathTemplate + "\")\n")
+			buf.WriteString(fmt.Sprintf("	fullURL := fmt.Sprintf(\"%%s%s\", c.domain)\n", pathTemplate))
 
 			// 4. 处理form参数（拼接为查询字符串）
 			if len(formParams) > 0 {
@@ -483,9 +488,19 @@ func getZeroValue(t string) string {
 		return "\"\""
 	case "bool":
 		return "false"
-	case "int", "int64", "float64":
+	case "int", "int8", "int16", "int32", "int64":
+		return "0"
+	case "uint", "uint8", "uint16", "uint32", "uint64":
+		return "0"
+	case "float32", "float64":
+		return "0"
+	case "complex64", "complex128":
 		return "0"
 	default:
+		// 对于切片、map、指针等类型，返回nil
+		if strings.HasPrefix(t, "[]") || strings.HasPrefix(t, "map[") || strings.HasPrefix(t, "*") {
+			return "nil"
+		}
 		return "\"\""
 	}
 }
